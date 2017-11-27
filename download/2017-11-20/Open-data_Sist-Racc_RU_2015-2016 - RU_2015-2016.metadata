@@ -1,0 +1,46 @@
+Rifiuti raccolti a livello comunale, con relativo sistema di raccolta. Il multimateriale, essendo un dato di raccolta, è da intendersi lordo, e quindi comprensivo degli scarti e dei sovvalli derivanti da eventuali operazioni di valorizzazione ai fini del recupero delle diverse frazioni.
+
+Per l’anno 2015 la quantità “raccolta su chiamata/prenotazione da parte dell’utente (colonna C)” e i “conferimenti c/o Ecomobile (colonna E)” sono compresi nella quota di “somma di tutti gli altri sistemi di raccolta colonna (Altro)”.
+
+Di seguito la legenda delle variabili considerate:
+
+PROVINCIA: denominazione della Provincia
+
+COMUNE: denominazione del Comune
+
+ISTAT_COD: codice Istat del Comune
+
+PROV_COD: codice Istat della Provincia
+
+REG_COD: codice Istat della Regione
+
+LATITUDE: latitudine del capoluogo
+
+LONGITUDE: longitudine del capoluogo
+
+ABITANTI: popolazione comunale (fonte: Regione Emilia-Romagna)
+
+PP: raccolta porta a porta/domiciliare (kg)
+
+CS: raccolta con contenitori stradali (kg)
+
+Altro: somma di tutti gli altri sistemi di raccolta (kg)
+
+C: raccolta su chiamata/prenotazione da parte dell'utente (kg)
+
+E: conferimenti c/o Ecomobile (kg)
+
+CdR: conferimenti presso i centri di raccolta
+
+R.S.A.: Rifiuti speciali assimilati avviati a recupero dal produttore ai sensi dell'art.238,c.10,DLgs.152/06 (Kg)
+
+Macro: tipo di raccolta Kg)
+
+Rifiuto1: nome del rifiuto
+
+Rifiuto2: dettaglio nome del rifiuto
+
+CER: classificazione europea del rifiuto
+
+Totale(kg): Quantitativo raccolto (kg)
+

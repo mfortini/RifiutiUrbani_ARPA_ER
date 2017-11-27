@@ -1,0 +1,88 @@
+---
+title: "Rifiuti Urbani Emilia-Romagna"
+author: "Matteo Fortini"
+date: "21 novembre 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+source("analizza.R")
+```
+
+
+
+# Rifiuti Urbani in Emilia-Romagna 2015 e 2016
+
+```{r aggregate_sistemi, echo=FALSE}
+
+```
+
+
+In Emilia Romagna i rifiuti urbani sono aumentati dal 2015 al 2016 di `r ((tot_KG_anno %>% filter(Anno==2016))$tot_KG-(tot_KG_anno %>% filter(Anno==2015))$tot_KG)/1000.` tonnellate
+
+```{r plot_tot_kg, echo=FALSE}
+ggplot(tot_KG_anno, aes(x=factor(Anno),y=tot_KG/1000.,fill=factor(Anno)))+geom_col()+xlab("Anno")+ylab("Tot Rifiuti Urbani (ton)")+ggtitle("Emilia-Romagna: Rifiuti Urbani Totali per Anno")+guides(fill=FALSE)+theme_fivethirtyeight()
+```
+
+## Composizione della raccolta
+
+La raccolta viene effettuata in vari modi:
+
+* Porta a porta
+* Con contenitori stradali
+* A chiamata
+* Con Ecomobile
+* Nei Centri di Raccolta
+
+
+```{r plot_composizione_raccolta, echo=FALSE}
+ggplot(melted_sistemi_anno,aes(x=factor(Anno),y=value,fill=variable))+xlab("Anno")+ylab("Tot Rifiuti Urbani (ton)")+geom_bar(position = "fill",stat = "identity")+scale_y_continuous(labels=percent_format())
+```
+
+### Il Porta-a-Porta
+
+Distribuzione comunale della percentuale della raccolta Porta-a-Porta nel 2015
+
+```{r mappa_pap_2015, echo=FALSE}
+range100=seq(from=0.,to=100.,length.out=1000.)
+pal=colorBin("YlGnBu",range100, 5, pretty=TRUE)
+fillColor=pal(limiti16PaPComune2015$percPaP)
+popup=sprintf('<h1>Comune di %s</h1>
+                            <table><tr><td>PaP</td><td>%.2f %%</td></tr><tr><td>PaP</td><td style="align:right;">%.3f t</td></tr><tr><td style="align:right;">Tot</td><td>%.3f t </td></tr></table>',limiti16PaPComune2015$COMUNE,limiti16PaPComune2015$percPaP,limiti16PaPComune2015$PaP/1000.,limiti16PaPComune2015$tot_kg/1000.)
+
+map = leaflet(gSimplify(limiti16PaPComune2015,tol=0.01,topologyPreserve=TRUE)) %>% addPolygons(fillColor=fillColor,weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  popup=popup) %>% addTiles()
+
+map %>% addLegend("bottomright", pal = pal, values = range100,
+    title = "Percentuale PaP (2015)",
+    labFormat = labelFormat(suffix = "%", digits=2),
+    opacity = 1
+  )
+```
+
+Questa invece la situazione nel 2016
+
+```{r mappa_pap_2016, echo=FALSE}
+fillColor=pal(limiti16PaPComune2016$percPaP)
+popup=sprintf('<h1>Comune di %s</h1>
+                            <table><tr><td>PaP</td><td>%.2f %%</td></tr><tr><td>PaP</td><td style="align:right;">%.3f t</td></tr><tr><td style="align:right;">Tot</td><td>%.3f t </td></tr></table>',limiti16PaPComune2016$COMUNE,limiti16PaPComune2016$percPaP,limiti16PaPComune2016$PaP/1000.,limiti16PaPComune2016$tot_kg/1000.)
+
+map = leaflet(gSimplify(limiti16PaPComune2016,tol=0.01,topologyPreserve=TRUE)) %>% addPolygons(fillColor=fillColor,weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  popup=popup) %>% addTiles()
+
+map %>% addLegend("bottomright", pal = pal, values = range100,
+    title = "Percentuale PaP (2016)",
+    labFormat = labelFormat(suffix = "%", digits=2),
+    opacity = 1
+  )
+```

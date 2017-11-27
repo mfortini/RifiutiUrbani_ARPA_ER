@@ -1,0 +1,32 @@
+Produzione annuale di rifiuti urbani a livello comunale, in riferimento alla quantità totale di rifiuti (in kg) prodotta, e alle quantità relative alla raccolta differenziata e indifferenziata. Sono inoltre calcolati la percentuale di raccolta differenziata misurata rispetto al totale dei rifiuti prodotti e la quantità pro capite di rifiuti totali e di rifiuti indifferenziati. File XLSX qui https://drive.google.com/open?id=0B-owdnU_9_lpZ016eDJWczc2ZUE
+
+Di seguito la legenda delle variabili considerate:
+
+COMUNE: denominazione del Comune
+
+COM_COD: codice Istat del Comune
+
+LATITUDE: latitudine del capoluogo
+
+LONGITUDE: longitudine del capoluogo
+
+ISTAT_COD: codice Istat del Comune
+
+PROV_COD: codice Istat della Provincia
+
+REG_COD: codice Istat della Regione
+
+ABITANTI: popolazione comunale (fonte: Regione Emilia-Romagna)
+
+RD_(kg): raccolta differenziata totale (kg)
+
+RI_(kg): produzione totale di rifiuti indifferenziati (kg)
+
+RU_(kg): produzione totale di rifiuti urbani (kg)
+
+RD_(%): percentuale di raccolta differenziata sul totale della produzione di rifiuti urbani
+
+RI_(Kg/ab): produzione pro capite di rifiuti indifferenziati (kg/ab)
+
+RU_(Kg/ab): produzione pro capite di rifiuti urbani (kg/ab)
+
