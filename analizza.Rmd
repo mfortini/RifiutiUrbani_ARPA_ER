@@ -1,7 +1,6 @@
 ---
-title: "Rifiuti Urbani Emilia-Romagna"
+title: "Rifiuti Urbani in Emilia-Romagna"
 author: "Matteo Fortini"
-date: "21 novembre 2017"
 output: html_document
 ---
 
@@ -15,6 +14,10 @@ source("analizza.R")
 
 # Rifiuti Urbani in Emilia-Romagna 2015 e 2016
 
+[ARPAE Emilia-Romagna](www.arpae.it) ha pubblicato i [dati sui Rifiuti Urbani per Comune](https://dati.arpae.it/dataset/rifiuti-urbani-per-comune) per il periodo 2010-2016 a partire dai valori ufficiali caricati sull'applicativo [ORSo (Osservatorio Rifiuti Sovraregionale)](https://www.arpae.it/dettaglio_generale.asp?id=2075&amp;idlivello=1838) dai gestori.
+
+I file sorgenti sono reperibili su [questo repository GitHub](https://github.com/mfortini/RifiutiUrbani_ARPA_ER).
+
 ```{r aggregate_sistemi, echo=FALSE}
 
 ```
@@ -25,6 +28,76 @@ In Emilia Romagna i rifiuti urbani sono aumentati dal 2015 al 2016 di `r ((tot_K
 ```{r plot_tot_kg, echo=FALSE}
 ggplot(tot_KG_anno, aes(x=factor(Anno),y=tot_KG/1000.,fill=factor(Anno)))+geom_col()+xlab("Anno")+ylab("Tot Rifiuti Urbani (ton)")+ggtitle("Emilia-Romagna: Rifiuti Urbani Totali per Anno")+guides(fill=FALSE)+theme_fivethirtyeight()
 ```
+
+## La Raccolta Differenziata
+
+La quantità di raccolta differenziata è aumentata, in Emilia Romagna, da un minimo di `r format((rdAnno %>% filter(Anno == 2010))$RD, digits=2)`% nel 2010 a un massimo di `r format((rdAnno %>% filter(Anno == 2016))$RD, digits=2)`% nel 2016
+
+```{r andamento_RD, echo=FALSE}
+
+ggplot(rdAnno, aes(x=Anno,y=RD,ymin=0,ymax=100))+geom_line()+geom_point()+xlab("Anno")+ylab("Raccolta Differenziata Emilia-Romagna")+ggtitle("Emilia-Romagna: percentuale di Raccolta Differenziata")+theme_fivethirtyeight()
+```
+
+È interessante notare come, nonostante la media di raccolta sia aumentata, la variabilità fra i comuni sia rimasta sempre molto ampia.
+```{r boxplot_RD,echo=FALSE}
+ggplot(andamento_sistemi_comune_anno_produzione,aes(x=Anno,y=RD...,group=Anno,ymin=0,ymax=100))+geom_boxplot()+xlab("Anno")+ylab("Raccolta Differenziata Emilia-Romagna")+ggtitle("Emilia-Romagna: percentuale di Raccolta Differenziata")+theme_fivethirtyeight()
+
+```
+
+## Comuni "ricicloni"
+
+La mappa sottostante mostra la percentuale di raccolta nei vari Comuni della Regione per l'anno 2016.
+
+```{r mappa_RD, echo=FALSE}
+range100=seq(from=0.,to=100.,length.out=1000.)
+pal=colorBin("YlGnBu",range100, 5, pretty=TRUE)
+fillColor=pal(limiti16RDComune$RD....y)
+popup=sprintf('<h1>Comune di %s</h1>
+                            <table><tr><td style="padding:10px;text-align:left"><b>RD 2016</b></td><td style="padding:10px;text-align:right">%.2f %%</td></tr>
+              </table>', limiti16RDComune$COMUNE,limiti16RDComune$RD....y)
+
+map = leaflet(gSimplify(limiti16RDComune,tol=0.01,topologyPreserve=TRUE)) %>% addPolygons(fillColor=fillColor,weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  popup=popup) %>% addTiles()
+
+map %>% addLegend("bottomright", pal = pal, values = range100,
+    title = "RD 2016",
+    labFormat = labelFormat(suffix = "%", digits=2),
+    opacity = 1
+  )
+```
+
+
+## Comuni virtuosi e meno virtuosi
+
+Dal 2010 al 2016, in alcuni comuni la percentuale di raccolta differenziata è aumentata, in altri è diminuita.
+
+```{r mappa_diffRD, echo=FALSE}
+rangem100_100=seq(from=-55.,to=55.,length.out=1000.)
+pal=colorBin("RdYlGn",rangem100_100,11, pretty=FALSE)
+fillColor=pal(limiti16RDComune$diffRd)
+popup=sprintf('<h1>Comune di %s</h1>
+                            <table><tr><td style="padding:10px;text-align:left"><b>differenza RD 2010-2016</b></td><td style="padding:10px;text-align:right">%.2f %%</td></tr>
+              <tr><td style="padding:10px;text-align:left"><b>RD 2010</b></td><td style="padding:10px;text-align:right">%.2f %%</td></tr>
+              <tr><td style="padding:10px;text-align:left"><b>RD 2016</b></td><td style="padding:10px;text-align:right">%.2f %%</td></tr></table>', limiti16RDComune$COMUNE,limiti16RDComune$diffRd,limiti16RDComune$RD....x,limiti16RDComune$RD....y)
+
+map = leaflet(gSimplify(limiti16RDComune,tol=0.01,topologyPreserve=TRUE)) %>% addPolygons(fillColor=fillColor,weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "3",
+  fillOpacity = 0.7,
+  popup=popup) %>% addTiles()
+
+map %>% addLegend("bottomright", pal = pal, values = range100,
+    title = "Scostamento RD 2010-2016",
+    labFormat = labelFormat(suffix = "%", digits=2),
+    opacity = 1
+  )
+```
+
 
 ## Composizione della raccolta
 
@@ -38,7 +111,8 @@ La raccolta viene effettuata in vari modi:
 
 
 ```{r plot_composizione_raccolta, echo=FALSE}
-ggplot(melted_sistemi_anno,aes(x=factor(Anno),y=value,fill=variable))+xlab("Anno")+ylab("Tot Rifiuti Urbani (ton)")+geom_bar(position = "fill",stat = "identity")+scale_y_continuous(labels=percent_format())
+p=ggplot(melted_sistemi_anno,aes(x=factor(Anno),y=value,fill=variable))+xlab("Anno")+ylab("Tot Rifiuti Urbani (ton)")+geom_bar(position = "fill",stat = "identity")+scale_y_continuous(labels=percent_format())+guides(fill=guide_legend(title="Rifiuti Urbani (ton)"))
+ggplotly(p)
 ```
 
 ### Il Porta-a-Porta
@@ -50,7 +124,7 @@ range100=seq(from=0.,to=100.,length.out=1000.)
 pal=colorBin("YlGnBu",range100, 5, pretty=TRUE)
 fillColor=pal(limiti16PaPComune2015$percPaP)
 popup=sprintf('<h1>Comune di %s</h1>
-                            <table><tr><td>PaP</td><td>%.2f %%</td></tr><tr><td>PaP</td><td style="align:right;">%.3f t</td></tr><tr><td style="align:right;">Tot</td><td>%.3f t </td></tr></table>',limiti16PaPComune2015$COMUNE,limiti16PaPComune2015$percPaP,limiti16PaPComune2015$PaP/1000.,limiti16PaPComune2015$tot_kg/1000.)
+                            <table><tr><td style="padding:10px;text-align:left"><b>PaP</b></td><td style="padding:10px;text-align:right">%.2f %%</td></tr><tr><td style="padding:10px;text-align:left"><b>PaP</b></td><td style="padding:10px;text-align:right">%.3f t</td></tr><tr><td style="padding:10px;text-align:left"><b>Tot</b></td><td style="padding:10px;text-align:right">%.3f t </td></tr></table>',limiti16PaPComune2015$COMUNE,limiti16PaPComune2015$percPaP,limiti16PaPComune2015$PaP/1000.,limiti16PaPComune2015$tot_kg/1000.)
 
 map = leaflet(gSimplify(limiti16PaPComune2015,tol=0.01,topologyPreserve=TRUE)) %>% addPolygons(fillColor=fillColor,weight = 2,
   opacity = 1,
@@ -60,7 +134,7 @@ map = leaflet(gSimplify(limiti16PaPComune2015,tol=0.01,topologyPreserve=TRUE)) %
   popup=popup) %>% addTiles()
 
 map %>% addLegend("bottomright", pal = pal, values = range100,
-    title = "Percentuale PaP (2015)",
+    title = "Percentuale PaP su totale (2015)",
     labFormat = labelFormat(suffix = "%", digits=2),
     opacity = 1
   )
@@ -71,7 +145,7 @@ Questa invece la situazione nel 2016
 ```{r mappa_pap_2016, echo=FALSE}
 fillColor=pal(limiti16PaPComune2016$percPaP)
 popup=sprintf('<h1>Comune di %s</h1>
-                            <table><tr><td>PaP</td><td>%.2f %%</td></tr><tr><td>PaP</td><td style="align:right;">%.3f t</td></tr><tr><td style="align:right;">Tot</td><td>%.3f t </td></tr></table>',limiti16PaPComune2016$COMUNE,limiti16PaPComune2016$percPaP,limiti16PaPComune2016$PaP/1000.,limiti16PaPComune2016$tot_kg/1000.)
+                            <table><tr><td style="padding:10px;text-align:left"><b>PaP</b></td><td style="padding:10px;text-align:right">%.2f %%</td></tr><tr><td style="padding:10px;text-align:left"><b>PaP</b></td><td style="padding:10px;text-align:right">%.3f t</td></tr><tr><td style="padding:10px;text-align:left"><b>Tot</b></td><td style="padding:10px;text-align:right">%.3f t </td></tr></table>',limiti16PaPComune2016$COMUNE,limiti16PaPComune2016$percPaP,limiti16PaPComune2016$PaP/1000.,limiti16PaPComune2016$tot_kg/1000.)
 
 map = leaflet(gSimplify(limiti16PaPComune2016,tol=0.01,topologyPreserve=TRUE)) %>% addPolygons(fillColor=fillColor,weight = 2,
   opacity = 1,
@@ -81,8 +155,11 @@ map = leaflet(gSimplify(limiti16PaPComune2016,tol=0.01,topologyPreserve=TRUE)) %
   popup=popup) %>% addTiles()
 
 map %>% addLegend("bottomright", pal = pal, values = range100,
-    title = "Percentuale PaP (2016)",
+    title = "Percentuale PaP su totale (2016)",
     labFormat = labelFormat(suffix = "%", digits=2),
     opacity = 1
   )
 ```
+
+
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Licenza Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />Quest'opera è distribuita con Licenza <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribuzione 4.0 Internazionale</a>.
