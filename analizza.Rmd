@@ -111,8 +111,7 @@ La raccolta viene effettuata in vari modi:
 
 
 ```{r plot_composizione_raccolta, echo=FALSE}
-p=ggplot(melted_sistemi_anno,aes(x=factor(Anno),y=value,fill=variable))+xlab("Anno")+ylab("Tot Rifiuti Urbani (ton)")+geom_bar(position = "fill",stat = "identity")+scale_y_continuous(labels=percent_format())+guides(fill=guide_legend(title="Rifiuti Urbani (ton)"))
-ggplotly(p)
+ggplot(melted_sistemi_anno,aes(x=factor(Anno),y=value,fill=variable))+xlab("Anno")+ylab("Tot Rifiuti Urbani (ton)")+geom_bar(position = "fill",stat = "identity")+scale_y_continuous(labels=percent_format())+guides(fill=guide_legend(title="Rifiuti Urbani (ton)"))
 ```
 
 ### Il Porta-a-Porta
@@ -161,5 +160,54 @@ map %>% addLegend("bottomright", pal = pal, values = range100,
   )
 ```
 
+## Cosa influenza la Raccolta Differenziata?
+
+Nei grafici seguenti sono visualizzati i differenti tipi di raccolta, normalizzati per numero di abitanti e per totale di kg. È indicato anche il [limite del 65%](https://www.arpae.it/dettaglio_generale.asp?id=3213&idlivello=1836)
+indicato come livello minimo di raccolta differenziata da raggiungere entro il 31/12/2012.
+
+### Contenitori Stradali
+
+La raccolta tramite contenitori stradali è correlata positivamente con la raccolta indifferenziata, negativamente con quella differenziata, seppure ci siano situazioni che raggiungono ottimi livelli anche
+con più del 60% di questo tipo di raccolta.
+
+```{r graph_RD_ContenitoriStradali, echo=FALSE}
+p1=ggplot(andamento_sistemi_comune_anno_produzione_2016_ab_tot,aes(y=RD,x=CS))+geom_point()+xlab("Contenitori Stradali (%/abitante)")+ylab("Raccolta Differenziata (%/abitante)")+ggtitle("Differenziata")+xlim(0,100)+ylim(0,100)+geom_hline(yintercept=65,color="red")+geom_smooth(method='lm')
+ggplotly(p1)
+```
+
+
+### Centri di Raccolta
+
+La raccolta effettuata nei centri, come si può dedurre dal fatto che tutto ciò che vi viene conferito viene differenziato, è correlata positivamente con la raccolta differenziata, 
+negativamente con la raccolta indifferenziata.
+
+```{r graph_RD_CentriDiRaccolta, echo=FALSE}
+p1=ggplot(andamento_sistemi_comune_anno_produzione_2016_ab_tot,aes(y=RD,x=CdR))+geom_point()+xlab("Centri di Raccolta (%/abitante)")+ylab("Raccolta Differenziata (%/abitante)")+ggtitle("Differenziata")+xlim(0,100)+ylim(0,100)+geom_hline(yintercept=65,color="red")+geom_smooth(method='lm')
+ggplotly(p1)
+```
+
+### Porta-a-Porta
+
+Il Porta-a-Porta ha una correlazione diretta con la percentuale di raccolta differenziata. Nonostante vi siano Comuni che raggiungono livelli di legge anche senza utilizzare questo metodo, 
+quelli che raggiungono altissimi livelli di differenziata hanno tutti una percentuale significativa (almeno 12.5%) di Porta-a-Porta.
+
+```{r graph_RD_PaP, echo=FALSE}
+p1=ggplot(andamento_sistemi_comune_anno_produzione_2016_ab_tot,aes(y=RD,x=PaP))+geom_point()+xlab("Porta-a-Porta (%/abitante)")+ylab("Raccolta Differenziata (%/abitante)")+ggtitle("Differenziata")+xlim(0,100)+ylim(0,100)+geom_hline(yintercept=65,color="red")+geom_smooth(method='lm')
+ggplotly(p1)
+```
+
+### Ecomobile, Chiamata
+
+Gli altri tipi di raccolta non presentano correlazioni significative né con la quantità di differenziata, che con quella di indifferenziata.
+
+```{r graph_RD_Ecomobile, echo=FALSE}
+p1=ggplot(andamento_sistemi_comune_anno_produzione_2016_ab_tot,aes(y=RD,x=Eco))+geom_point()+xlab("Ecomobile (%/abitante)")+ylab("Raccolta Differenziata (%/abitante)")+ggtitle("Differenziata")+xlim(0,100)+ylim(0,100)+geom_hline(yintercept=65,color="red")
+ggplotly(p1)
+```
+
+```{r graph_RD_Chiamata, echo=FALSE}
+p1=ggplot(andamento_sistemi_comune_anno_produzione_2016_ab_tot,aes(y=RD,x=Ch))+geom_point()+xlab("Chiamata (%/abitante)")+ylab("Raccolta Differenziata (%/abitante)")+ggtitle("Differenziata")+xlim(0,100)+ylim(0,100)+geom_hline(yintercept=65,color="red")
+ggplotly(p1)
+```
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Licenza Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />Quest'opera è distribuita con Licenza <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribuzione 4.0 Internazionale</a>.

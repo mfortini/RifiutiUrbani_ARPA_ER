@@ -3,6 +3,7 @@ library(reshape2)
 library(ggplot2)
 library(ggthemes)
 library(data.table)
+require(gridExtra)
 require(rgdal)
 require(rgeos)
 require(leaflet)
@@ -80,4 +81,16 @@ limiti16PaPComune2015$percPaP[is.na(limiti16PaPComune2015$percPaP)]=0.
 limiti16PaPComune2016$percPaP[is.na(limiti16PaPComune2016$percPaP)]=0.
 
 limiti16RDComune=merge(limiti16,scostamento_sistemi_comune_anno_produzione,by="PRO_COM")
+
+PRO_COM_comuniPaP=(andamento_sistemi_comune_anno %>% filter(Anno==2015,PaP>0) %>% group_by(PRO_COM))$PRO_COM
+comuniPaP=andamento_sistemi_comune_anno %>% filter(PRO_COM %in% PRO_COM_comuniPaP)
+
+comuniPaP_anno=comuniPaP %>% group_by(Anno) %>% summarise (tot_PaP=sum(PaP),tot_KG=sum(tot_kg))
+comuniPaP_anno$percPaP=comuniPaP_anno$tot_PaP/comuniPaP_anno$tot_KG*100.
+
+andamento_sistemi_comune_anno_produzione_2016_ab_tot = 100. * andamento_sistemi_comune_anno_produzione_2016_ab[c("RD.kg.","RI.kg.","PaP","Centri di Raccolta","Ecomobile","Altro","Chiamata","Contenitori Stradali")]/andamento_sistemi_comune_anno_produzione_2016_ab$tot_kg
+colnames(andamento_sistemi_comune_anno_produzione_2016_ab_tot) = c("RD","RI","PaP","CdR","Eco","Altro","Ch","CS")
+andamento_sistemi_comune_anno_produzione_2016_ab_tot = cbind(andamento_sistemi_comune_anno_produzione_2016$COMUNE.x,andamento_sistemi_comune_anno_produzione_2016_ab_tot)
+colnames(andamento_sistemi_comune_anno_produzione_2016_ab_tot)[1]="Comune"
+
 
